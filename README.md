@@ -24,3 +24,4 @@ Important:
 - Added the generated brand logo to the header/footer/login screen.
 - Added a Login / My Account UI with Google and email login buttons.
 - Authentication is intentionally not fake: the buttons are placeholders until a secure auth provider/backend is connected.
+v2 update
