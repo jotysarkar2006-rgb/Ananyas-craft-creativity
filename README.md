@@ -24,4 +24,11 @@ Important:
 - Added the generated brand logo to the header/footer/login screen.
 - Added a Login / My Account UI with Google and email login buttons.
 - Authentication is intentionally not fake: the buttons are placeholders until a secure auth provider/backend is connected.
-v2 update
+
+
+## V3 Product Studio
+- Added `admin.html` product dashboard.
+- Add/edit/delete products, price, stock, category, description and image URL.
+- Added Skincare category.
+- Shop reads the editable catalog and respects stock.
+- Product changes currently use browser localStorage only. For real multi-device store management, connect a secure database and admin authentication in the next step.
