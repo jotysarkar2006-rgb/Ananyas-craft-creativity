@@ -1,166 +1,43 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#f6efe7">
-  <title>Ananya's Craft & Creativity</title>
-  <meta name="description" content="Little handmade stories, made with love.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ananya's Craft & Creativity — Handmade with Love</title>
+<meta name="description" content="Premium handmade jewellery, gifts, rakhis, accessories and skincare by Ananya's Craft & Creativity.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600&family=Parisienne&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="announcement">Handmade • Artistic • Personal &nbsp; ✦ &nbsp; Made with love in India</div>
+<header class="site-header"><div class="nav-wrap">
+<a class="brand" href="#home"><img class="brand-logo" src="logo.png" alt="Ananya's Craft & Creativity"></a>
+<nav><a href="#home">Home</a><a href="#shop">Shop</a><a href="#categories">Categories</a><a href="#story">Our Story</a><a href="#contact">Contact</a></nav>
+<div class="header-actions">
+<div class="search-box"><span>⌕</span><input id="searchInput" placeholder="Search handmade pieces"></div>
+<button class="icon-btn" id="wishBtn" aria-label="Wishlist">♡<span class="count" id="wishCount">0</span></button>
+<button class="icon-btn" id="cartBtn" aria-label="Cart">🛍<span class="count" id="cartCount">0</span></button>
+<button class="icon-btn account-btn" id="accountBtn" aria-label="Account">♙</button>
+<button class="menu-btn" id="menuBtn">☰</button></div></div>
+<div class="mobile-menu" id="mobileMenu"><a href="#home">Home</a><a href="#shop">Shop</a><a href="#categories">Categories</a><a href="#story">Our Story</a><a href="#contact">Contact</a><a href="#" id="mobileAccount">My Account / Login</a></div>
+</header>
 
-  <header class="header">
-    <a class="brand" href="#home" aria-label="Ananya's Craft & Creativity home">
-      <img class="brand-logo" src="logo.png" alt="Ananya's Craft & Creativity logo">
-    </a>
+<main id="home">
+<section class="hero"><div class="hero-copy"><p class="eyebrow">HANDMADE • ARTISTIC • PERSONAL</p><h1>Little handmade<br><em>stories, made with</em><br>love.</h1><p class="hero-text">Thoughtful little creations, handcrafted with patience, warmth and a touch of Ananya's imagination.</p><a class="btn primary" href="#shop">Explore Collection →</a></div><div class="hero-art"><div class="hero-card"><span>Made<br>with<br>love.</span></div><i>✿</i></div></section>
 
-    <nav class="desktop-nav">
-      <a href="#home">Home</a>
-      <a href="#shop">Shop</a>
-      <a href="#categories">Categories</a>
-      <a href="#story">Our Story</a>
-      <a href="#contact">Contact</a>
-    </nav>
+<section id="categories" class="section categories"><div class="section-head"><p class="eyebrow">FIND YOUR LITTLE SOMETHING</p><h2>Shop by category</h2></div><div id="categoryList" class="category-list"></div></section>
 
-    <div class="header-actions">
-      <button class="icon-btn" id="searchBtn" aria-label="Search">⌕</button>
-      <button class="icon-btn" id="wishlistBtn" aria-label="Wishlist">♡<span class="count" id="wishCount">0</span></button>
-      <button class="icon-btn" id="cartBtn" aria-label="Cart">🛍<span class="count" id="cartCount">0</span></button>
-      <button class="icon-btn account-btn" id="accountBtn" aria-label="Account">♙</button>
-      <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
-    </div>
-  </header>
+<section id="shop" class="section shop"><div class="section-head row"><div><p class="eyebrow">OUR HANDMADE COLLECTION</p><h2>Made slowly. Loved deeply.</h2></div><span class="soft-note">Every piece is made with care.</span></div><div id="productGrid" class="product-grid"></div></section>
 
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="#home">Home</a><a href="#shop">Shop</a><a href="#categories">Categories</a><a href="#story">Our Story</a><a href="#contact">Contact</a>
-    <a href="#" id="mobileAccount">My Account / Login</a>
-  </div>
+<section id="story" class="story section"><div><p class="eyebrow">OUR STORY</p><h2>Small creations.<br>Big feelings.</h2></div><p>From tiny gifts to jewellery and everyday keepsakes, Ananya's Craft & Creativity is a little corner for handmade things that feel personal. Each piece is imagined, crafted and packed with love.</p></section>
 
-  <section class="hero" id="home">
-    <div class="hero-copy">
-      <p class="eyebrow">HANDMADE • ARTISTIC • PERSONAL</p>
-      <h1>Little handmade<br><em>stories,</em> made with love.</h1>
-      <p class="hero-text">Thoughtful little creations, handcrafted with patience, warmth and a touch of Ananya's imagination.</p>
-      <a class="btn primary" href="#shop">Explore Collection <span>→</span></a>
-      <div class="hero-note"><span>✦</span> Crafted for the moments that matter</div>
-    </div>
-    <div class="hero-art">
-      <div class="arch"></div>
-      <div class="floating flower f1">✿</div>
-      <div class="floating flower f2">❀</div>
-      <div class="hero-card">
-        <div class="hero-placeholder">
-          <span>♡</span>
-          <p>Your beautiful<br>handmade products</p>
-        </div>
-      </div>
-      <div class="tag">made<br>with love</div>
-    </div>
-  </section>
+<section id="contact" class="contact section"><div><p class="eyebrow">SAY HELLO</p><h2>Let's create something special.</h2></div><div><p>For custom orders, availability, delivery and questions, message us directly on WhatsApp.</p><a class="btn outline" href="https://wa.me/917890605022" target="_blank">Chat on WhatsApp →</a></div></section>
+</main>
 
-  <section class="trust-strip">
-    <div><b>✿</b><span>Handmade with care</span></div>
-    <div><b>♡</b><span>Made for you</span></div>
-    <div><b>✦</b><span>Custom creations</span></div>
-    <div><b>☏</b><span>Order on WhatsApp</span></div>
-  </section>
+<footer><div class="footer-grid"><div><img class="footer-logo-img" src="logo.png" alt="Ananya's Craft & Creativity"><p>Handmade pieces with care.</p></div><div><h4>Explore</h4><a href="#shop">Shop</a><a href="#categories">Categories</a><a href="#story">Our Story</a></div><div><h4>Help</h4><a href="https://wa.me/917890605022" target="_blank">WhatsApp</a><a href="#contact">Delivery info</a><a href="admin.html" id="adminLink">Product Studio</a></div></div><div class="footer-bottom">© 2026 Ananya's Craft & Creativity • Made with love in India.</div></footer>
 
-  <section class="section categories" id="categories">
-    <div class="section-head">
-      <div><p class="eyebrow">FIND YOUR LITTLE FAVOURITE</p><h2>Shop by category</h2></div>
-      <a href="#shop" class="text-link">View all →</a>
-    </div>
-    <div class="category-grid" id="categoryGrid"></div>
-  </section>
+<div id="overlay" class="overlay"></div>
+<aside id="cartPanel" class="side-panel"><div class="panel-head"><h2>Your cart</h2><button id="closePanels">×</button></div><div id="cartItems"></div><div class="cart-footer"><div><span>Total</span><strong id="cartTotal">₹0</strong></div><button id="checkoutBtn" class="btn primary full">Order on WhatsApp →</button><p>Payment is completed directly with the seller after order confirmation.</p></div></aside>
 
-  <section class="section shop" id="shop">
-    <div class="section-head">
-      <div><p class="eyebrow">HANDPICKED FOR YOU</p><h2>Featured creations</h2></div>
-      <div class="shop-tools">
-        <button class="filter active" data-filter="All">All</button>
-        <button class="filter" data-filter="Rakhi">Rakhi</button>
-        <button class="filter" data-filter="Jewellery">Jewellery</button>
-        <button class="filter" data-filter="Gifts">Gifts</button>
-      </div>
-    </div>
-    <div class="product-grid" id="productGrid"></div>
-  </section>
-
-  <section class="story section" id="story">
-    <div class="story-image"><div class="story-placeholder">ANANYA'S<br><small>HANDMADE JOURNEY</small></div></div>
-    <div class="story-copy">
-      <p class="eyebrow">A LITTLE STORY</p>
-      <h2>Made by hand.<br><em>Made from the heart.</em></h2>
-      <p>Ananya's Craft & Creativity began with a simple love for making beautiful things by hand. Every piece is created slowly, thoughtfully and with the hope that it becomes a tiny part of someone's special moment.</p>
-      <p>From little gifts to personal creations, each design carries its own story — imperfect in the most beautiful way, and made especially for you.</p>
-      <a class="text-link" href="#contact">Meet the maker →</a>
-    </div>
-  </section>
-
-  <section class="quote-section">
-    <span>“</span>
-    <h2>There is something special about<br><em>something made just for you.</em></h2>
-  </section>
-
-  <section class="newsletter section">
-    <div><p class="eyebrow">STAY IN THE LOOP</p><h2>Little notes & new creations</h2><p>Follow along for new handmade drops and behind-the-scenes moments.</p></div>
-    <a class="btn outline" href="https://www.instagram.com/projaa_poti/" target="_blank" rel="noopener">Follow @projaa_poti ↗</a>
-  </section>
-
-  <footer id="contact">
-    <div class="footer-brand">
-      <div class="brand footer-logo"><img class="brand-logo footer-brand-logo" src="logo.png" alt="Ananya's Craft & Creativity logo"></div>
-      <p>Little handmade stories, made with love. ♡</p>
-    </div>
-    <div><h4>Explore</h4><a href="#shop">Shop</a><a href="#categories">Categories</a><a href="#story">Our Story</a></div>
-    <div><h4>Help</h4><a href="#contact">Contact</a><a href="#shop">Order on WhatsApp</a><a href="#home">Shipping info</a><a href="admin.html">Admin / Products</a></div>
-    <div><h4>Connect</h4><a href="https://www.instagram.com/projaa_poti/" target="_blank">Instagram</a><a href="mailto:ananyabarik623@gmail.com">ananyabarik623@gmail.com</a><a href="https://wa.me/917890605022" target="_blank">+91 78906 05022</a></div>
-    <div class="footer-bottom">© 2026 Ananya's Craft & Creativity. Handmade with love.</div>
-  </footer>
-
-  <div class="overlay" id="overlay"></div>
-
-  <aside class="drawer" id="cartDrawer">
-    <div class="drawer-head"><h3>Your Cart</h3><button class="close" data-close>×</button></div>
-    <div id="cartItems" class="drawer-body"></div>
-    <div class="drawer-foot"><div class="total"><span>Total</span><b id="cartTotal">₹0</b></div><button class="btn primary full" id="whatsappOrder">Order on WhatsApp</button></div>
-  </aside>
-
-  <aside class="drawer" id="wishDrawer">
-    <div class="drawer-head"><h3>Your Wishlist</h3><button class="close" data-close>×</button></div>
-    <div id="wishItems" class="drawer-body"></div>
-  </aside>
-
-  <div class="search-panel" id="searchPanel">
-    <button class="close search-close" id="searchClose">×</button>
-    <p class="eyebrow">SEARCH THE COLLECTION</p>
-    <input id="searchInput" type="search" placeholder="Search handmade creations...">
-    <div id="searchResults"></div>
-  </div>
-
-
-  <div class="login-modal" id="loginModal">
-    <div class="login-card">
-      <button class="close login-close" id="loginClose">×</button>
-      <img src="logo.png" class="login-logo" alt="Ananya's Craft & Creativity">
-      <p class="eyebrow">WELCOME TO THE LITTLE WORLD OF ANANYA</p>
-      <h2>My Account</h2>
-      <p class="login-sub">Sign in to save your wishlist, cart and orders.</p>
-      <button class="google-btn" id="googleLogin">G&nbsp;&nbsp; Continue with Google</button>
-      <div class="or"><span>or</span></div>
-      <input class="login-input" id="emailLogin" type="email" placeholder="Email address">
-      <input class="login-input" id="passwordLogin" type="password" placeholder="Password">
-      <button class="btn primary full" id="emailLoginBtn">Sign In</button>
-      <button class="signup-link" id="signupBtn">Create a new account</button>
-      <p class="auth-note">Login UI is ready. Secure account authentication will be connected in the next backend step.</p>
-    </div>
-  </div>
-
-  <script src="app.js"></script>
-</body>
-</html>
+<div class="login-modal" id="loginModal"><div class="login-card"><button class="close login-close" id="loginClose">×</button><img src="logo.png" class="login-logo" alt="Ananya's Craft & Creativity"><p class="eyebrow">WELCOME TO ANANYA'S</p><h2>My Account</h2><p class="login-sub">Save your wishlist, cart and orders.</p><button class="google-btn" id="googleLogin">G&nbsp;&nbsp; Continue with Google</button><div class="or"><span>or</span></div><input class="login-input" type="email" placeholder="Email address"><input class="login-input" type="password" placeholder="Password"><button class="btn primary full" id="emailLoginBtn">Sign In</button><button class="signup-link" id="signupBtn">Create a new account</button><p class="auth-note">Secure authentication will be connected with the backend.</p></div></div>
+<script src="app.js"></script>
+</body></html>

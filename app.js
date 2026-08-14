@@ -1,98 +1,91 @@
-const WHATSAPP="917890605022";
+/* Ananya's Craft & Creativity — complete storefront */
+const WA_NUMBER="917890605022";
+const DEFAULT_CATEGORIES=["All","Rakhi","Jewellery","Hair Accessories","Gifts","Custom Creations","Home Decor","Skincare","New Arrivals","Best Sellers"];
+
 const DEFAULT_PRODUCTS=[
- {id:1,name:"Blush Bloom Rakhi",cat:"Rakhi",price:249,desc:"A delicate handmade floral rakhi.",stock:10,image:""},
- {id:2,name:"Pearl Petal Bracelet",cat:"Jewellery",price:399,desc:"Soft pearls with a handcrafted finish.",stock:8,image:""},
- {id:3,name:"Little Love Gift",cat:"Gifts",price:499,desc:"A thoughtful handmade gift set.",stock:5,image:""},
- {id:4,name:"Butterfly Charm",cat:"Jewellery",price:349,desc:"A playful little charm made with care.",stock:7,image:""},
- {id:5,name:"Floral Hair Bow",cat:"Hair Accessories",price:199,desc:"A pretty handmade accessory.",stock:12,image:""},
- {id:6,name:"Custom Keepsake",cat:"Custom Creations",price:599,desc:"Made specially for your story.",stock:4,image:""},
- {id:7,name:"Handmade Glow",cat:"Skincare",price:299,desc:"A gentle handmade self-care pick.",stock:9,image:""},
- {id:8,name:"Festive Mini Gift",cat:"Gifts",price:449,desc:"A sweet little handmade surprise.",stock:6,image:""}
+ {id:1,name:"Blush Bloom Rakhi",cat:"Rakhi",price:249,desc:"A delicate handmade floral rakhi.",stock:10,image:"",badge:"New"},
+ {id:2,name:"Pearl Petal Bracelet",cat:"Jewellery",price:399,desc:"Soft pearls with a handcrafted finish.",stock:8,image:"",badge:""},
+ {id:3,name:"Little Love Gift",cat:"Gifts",price:499,desc:"A thoughtful handmade gift set.",stock:5,image:"",badge:"Best Seller"},
+ {id:4,name:"Butterfly Charm",cat:"Jewellery",price:349,desc:"A playful little charm made with care.",stock:7,image:"",badge:""},
+ {id:5,name:"Floral Hair Bow",cat:"Hair Accessories",price:199,desc:"A pretty handmade accessory.",stock:12,image:"",badge:""},
+ {id:6,name:"Custom Keepsake",cat:"Custom Creations",price:599,desc:"Made specially for your story.",stock:4,image:"",badge:"Custom"},
+ {id:7,name:"Handmade Glow",cat:"Skincare",price:299,desc:"A gentle handmade self-care pick.",stock:9,image:"",badge:""},
+ {id:8,name:"Festive Mini Gift",cat:"Gifts",price:449,desc:"A sweet little handmade surprise.",stock:6,image:"",badge:""}
 ];
 let products=JSON.parse(localStorage.getItem("ananyaProducts")||"null")||DEFAULT_PRODUCTS;
-const categories=["Rakhi","Jewellery","Hair Accessories","Handmade Gifts","Custom Creations","Home Decor","Skincare","New Arrivals","Best Sellers"];
 let cart=JSON.parse(localStorage.getItem("ananyaCart")||"[]");
 let wishlist=JSON.parse(localStorage.getItem("ananyaWish")||"[]");
-
-const money=n=>"₹"+n.toLocaleString("en-IN");
-function save(){
- localStorage.setItem("ananyaCart",JSON.stringify(cart));
- localStorage.setItem("ananyaWish",JSON.stringify(wishlist));
- localStorage.setItem("ananyaProducts",JSON.stringify(products));
- updateCounts();
-}
-function updateCounts(){document.querySelector("#cartCount").textContent=cart.reduce((a,x)=>a+x.qty,0);document.querySelector("#wishCount").textContent=wishlist.length;}
-
+let currentCategory="All";
+let searchTerm="";
+const money=n=>"₹"+Number(n).toLocaleString("en-IN");
+const qs=s=>document.querySelector(s);
+const qsa=s=>[...document.querySelectorAll(s)];
+function persist(){localStorage.setItem("ananyaProducts",JSON.stringify(products));localStorage.setItem("ananyaCart",JSON.stringify(cart));localStorage.setItem("ananyaWish",JSON.stringify(wishlist));updateCounts();}
+function updateCounts(){const c=cart.reduce((a,x)=>a+x.qty,0);const w=wishlist.length;const cc=qs("#cartCount"),wc=qs("#wishCount");if(cc)cc.textContent=c;if(wc)wc.textContent=w;}
+function imageMarkup(p){return p.image?`<img src="${p.image}" alt="${p.name}" loading="lazy">`:`<span class="product-placeholder">♡<small>handmade</small></span>`;}
 function productCard(p){
- const liked=wishlist.includes(p.id);
- const image=p.image ? `<img src="${p.image}" alt="${p.name}" loading="lazy">` : `<span class="product-placeholder">♡<small>handmade</small></span>`;
- const soldOut=Number(p.stock||0)<=0;
- return `<article class="product-card">
-  <div class="product-image">${image}<button class="wish" data-wish="${p.id}">${liked?"♥":"♡"}</button><span>${soldOut?"sold out":"handmade"}</span></div>
-  <div class="product-info"><small>${p.cat}</small><h3>${p.name}</h3><p>${money(p.price)}</p>
-  <div class="product-actions"><button class="mini-btn add" data-add="${p.id}" ${soldOut?"disabled":""}>${soldOut?"Sold out":"Add to cart"}</button><button class="mini-btn" data-buy="${p.id}" ${soldOut?"disabled":""}>WhatsApp</button></div></div>
- </article>`;
+ const liked=wishlist.includes(p.id), sold=Number(p.stock||0)<=0;
+ return `<article class="product-card" data-name="${p.name.toLowerCase()}">
+  <div class="product-image">${imageMarkup(p)}${p.badge?`<b class="product-badge">${p.badge}</b>`:""}<button class="wish ${liked?"liked":""}" data-wish="${p.id}" aria-label="Wishlist">${liked?"♥":"♡"}</button></div>
+  <div class="product-info"><small>${p.cat}</small><h3>${p.name}</h3><p class="product-price">${money(p.price)}</p><p class="product-desc">${p.desc||""}</p>
+   <div class="stock-note">${sold?"Sold out":`${p.stock} available`}</div>
+   <div class="product-actions"><button class="mini-btn add" data-add="${p.id}" ${sold?"disabled":""}>${sold?"Sold out":"Add to cart"}</button><button class="mini-btn" data-buy="${p.id}" ${sold?"disabled":""}>WhatsApp</button></div>
+  </div></article>`;
 }
-function renderProducts(list=products){document.querySelector("#productGrid").innerHTML=list.map(productCard).join("")||'<p class="empty">No creations found.</p>';bindProductButtons();}
-function renderCategories(){document.querySelector("#categoryGrid").innerHTML=categories.slice(0,5).map((c,i)=>`<a class="category-card" href="#shop" data-cat="${c}"><span>${c}</span></a>`).join("");document.querySelectorAll(".category-card").forEach(x=>x.onclick=()=>{document.querySelectorAll(".filter").forEach(b=>b.classList.remove("active"));document.querySelectorAll(".filter").forEach(b=>{if(b.dataset.filter===x.dataset.cat)b.classList.add("active")});renderProducts(products.filter(p=>p.cat===x.dataset.cat||x.dataset.cat==="New Arrivals"||x.dataset.cat==="Best Sellers"));});}
-function bindProductButtons(){
- document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>addToCart(+b.dataset.add));
- document.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>orderWhatsApp([+b.dataset.buy]));
- document.querySelectorAll("[data-wish]").forEach(b=>b.onclick=()=>toggleWish(+b.dataset.wish));
+function filteredProducts(){
+ return products.filter(p=>(currentCategory==="All"||p.cat===currentCategory||currentCategory==="Best Sellers"&&p.badge==="Best Seller"||currentCategory==="New Arrivals"&&p.badge==="New") && (!searchTerm||`${p.name} ${p.cat} ${p.desc}`.toLowerCase().includes(searchTerm)));
 }
-function addToCart(id){
- const p=products.find(x=>x.id===id);
- if(!p || Number(p.stock||0)<=0)return;
- const item=cart.find(x=>x.id===id);
- if(item){
-   if(item.qty < Number(p.stock)) item.qty++;
- } else cart.push({id,qty:1});
- save();openDrawer("cartDrawer");renderCart();
+function renderProducts(){
+ const grid=qs("#productGrid"); if(!grid)return;
+ const list=filteredProducts(); grid.innerHTML=list.length?list.map(productCard).join(""):`<div class="empty-state"><h3>No pieces found.</h3><p>Try another search or category.</p></div>`;
+ qsa("[data-add]").forEach(b=>b.onclick=()=>addToCart(Number(b.dataset.add)));
+ qsa("[data-wish]").forEach(b=>b.onclick=()=>toggleWish(Number(b.dataset.wish)));
+ qsa("[data-buy]").forEach(b=>b.onclick=()=>buyWhatsApp(Number(b.dataset.buy)));
 }
-function toggleWish(id){wishlist.includes(id)?wishlist=wishlist.filter(x=>x!==id):wishlist.push(id);save();renderProducts(currentProducts);renderWishlist();}
-let currentProducts=products;
+function renderCategories(){
+ const box=qs("#categoryList");if(!box)return;
+ box.innerHTML=DEFAULT_CATEGORIES.map(c=>`<button class="category-pill ${c===currentCategory?"active":""}" data-cat="${c}">${c}</button>`).join("");
+ qsa("[data-cat]").forEach(b=>b.onclick=()=>{currentCategory=b.dataset.cat;renderCategories();renderProducts();document.querySelector("#shop")?.scrollIntoView({behavior:"smooth"});});
+}
+function addToCart(id){const p=products.find(x=>x.id===id);if(!p||p.stock<=0)return;const item=cart.find(x=>x.id===id);if(item){if(item.qty<p.stock)item.qty++;}else cart.push({id,qty:1});persist();renderCart();openPanel("cartPanel");}
+function removeCart(id){cart=cart.filter(x=>x.id!==id);persist();renderCart();}
+function changeQty(id,d){const p=products.find(x=>x.id===id),i=cart.find(x=>x.id===id);if(!i||!p)return;i.qty=Math.max(1,Math.min(p.stock,i.qty+d));persist();renderCart();}
 function renderCart(){
- const el=document.querySelector("#cartItems");
- if(!cart.length){el.innerHTML='<div class="empty">Your cart is waiting for something handmade. ♡</div>';document.querySelector("#cartTotal").textContent="₹0";return;}
- el.innerHTML=cart.map(x=>{const p=products.find(y=>y.id===x.id);return `<div class="drawer-product"><div class="drawer-thumb">♡</div><div><h4>${p.name}</h4><p>${money(p.price)} × ${x.qty}</p><div><button class="remove" data-dec="${p.id}">−</button> ${x.qty} <button class="remove" data-inc="${p.id}">+</button></div></div><button class="remove" data-remove="${p.id}">×</button></div>`}).join("");
- document.querySelector("#cartTotal").textContent=money(cart.reduce((a,x)=>a+products.find(p=>p.id===x.id).price*x.qty,0));
- el.querySelectorAll("[data-inc]").forEach(b=>b.onclick=()=>{cart.find(x=>x.id===+b.dataset.inc).qty++;save();renderCart()});
- el.querySelectorAll("[data-dec]").forEach(b=>b.onclick=()=>{const x=cart.find(x=>x.id===+b.dataset.dec);x.qty--;if(x.qty<1)cart=cart.filter(y=>y.id!==x.id);save();renderCart()});
- el.querySelectorAll("[data-remove]").forEach(b=>b.onclick=()=>{cart=cart.filter(x=>x.id!==+b.dataset.remove);save();renderCart()});
+ const box=qs("#cartItems"),total=qs("#cartTotal");if(!box)return;
+ if(!cart.length){box.innerHTML='<div class="empty-state small"><p>Your cart is waiting for something lovely.</p></div>';if(total)total.textContent="₹0";return;}
+ let sum=0;
+ box.innerHTML=cart.map(i=>{const p=products.find(x=>x.id===i.id);if(!p)return"";sum+=p.price*i.qty;return `<div class="cart-item"><div class="cart-thumb">${imageMarkup(p)}</div><div><h4>${p.name}</h4><small>${money(p.price)} × ${i.qty}</small><div class="qty"><button data-minus="${p.id}">−</button><span>${i.qty}</span><button data-plus="${p.id}">+</button><button class="remove" data-remove="${p.id}">Remove</button></div></div></div>`;}).join("");
+ qsa("[data-minus]").forEach(b=>b.onclick=()=>changeQty(Number(b.dataset.minus),-1));qsa("[data-plus]").forEach(b=>b.onclick=()=>changeQty(Number(b.dataset.plus),1));qsa("[data-remove]").forEach(b=>b.onclick=()=>removeCart(Number(b.dataset.remove)));if(total)total.textContent=money(sum);
 }
-function renderWishlist(){
- const el=document.querySelector("#wishItems");
- const items=wishlist.map(id=>products.find(p=>p.id===id)).filter(Boolean);
- el.innerHTML=items.length?items.map(p=>`<div class="drawer-product"><div class="drawer-thumb">♡</div><div><h4>${p.name}</h4><p>${money(p.price)}</p><button class="mini-btn add" data-wishcart="${p.id}">Add to cart</button></div><button class="remove" data-wishremove="${p.id}">×</button></div>`).join(""):'<div class="empty">Save the pieces you love here. ♡</div>';
- el.querySelectorAll("[data-wishcart]").forEach(b=>b.onclick=()=>addToCart(+b.dataset.wishcart));
- el.querySelectorAll("[data-wishremove]").forEach(b=>b.onclick=()=>toggleWish(+b.dataset.wishremove));
+function toggleWish(id){wishlist.includes(id)?wishlist=wishlist.filter(x=>x!==id):wishlist.push(id);persist();renderProducts();}
+function buyWhatsApp(id){
+ const p=products.find(x=>x.id===id);if(!p)return;
+ const msg=`Hello Ananya's Craft & Creativity!%0A%0AI want to order:%0A• ${encodeURIComponent(p.name)}%0A• Price: ${encodeURIComponent(money(p.price))}%0A• Quantity: 1%0A%0APlease confirm availability and delivery details.`;
+ window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`,"_blank");
 }
-function openDrawer(id){document.querySelector("#overlay").style.display="block";document.querySelector("#"+id).classList.add("open")}
-function closeDrawers(){document.querySelectorAll(".drawer").forEach(x=>x.classList.remove("open"));document.querySelector("#overlay").style.display="none"}
-function orderWhatsApp(ids=cart.map(x=>x.id)){if(!ids.length)return;let rows=[];ids.forEach(id=>{const p=products.find(x=>x.id===id);const q=cart.find(x=>x.id===id)?.qty||1;rows.push(`${p.name} × ${q} — ${money(p.price*q)}`)});const total=ids.reduce((a,id)=>{const p=products.find(x=>x.id===id);const q=cart.find(x=>x.id===id)?.qty||1;return a+p.price*q},0);const msg=`Hello Ananya's Craft & Creativity! ♡%0A%0AI would like to place an order:%0A${rows.join("%0A")}%0A%0ATotal: ${money(total)}%0A%0APlease confirm availability and delivery details.`;window.open(`https://wa.me/${WHATSAPP}?text=${msg}`,"_blank");}
-
-document.querySelector("#cartBtn").onclick=()=>{renderCart();openDrawer("cartDrawer")};
-document.querySelector("#wishlistBtn").onclick=()=>{renderWishlist();openDrawer("wishDrawer")};
-document.querySelector("#overlay").onclick=closeDrawers;
-document.querySelectorAll("[data-close]").forEach(x=>x.onclick=closeDrawers);
-document.querySelector("#whatsappOrder").onclick=()=>orderWhatsApp();
-document.querySelector("#menuBtn").onclick=()=>document.querySelector("#mobileMenu").classList.toggle("open");
-
-document.querySelectorAll(".filter").forEach(b=>b.onclick=()=>{document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));b.classList.add("active");currentProducts=b.dataset.filter==="All"?products:products.filter(p=>p.cat===b.dataset.filter);renderProducts(currentProducts)});
-
-const searchPanel=document.querySelector("#searchPanel");
-document.querySelector("#searchBtn").onclick=()=>{searchPanel.classList.add("open");document.querySelector("#searchInput").focus()};
-document.querySelector("#searchClose").onclick=()=>searchPanel.classList.remove("open");
-document.querySelector("#searchInput").oninput=e=>{const q=e.target.value.toLowerCase().trim();const results=products.filter(p=>(p.name+" "+p.cat+" "+p.desc).toLowerCase().includes(q));document.querySelector("#searchResults").innerHTML=q?results.map(p=>`<div class="search-result"><span>${p.name} — ${money(p.price)}</span><button data-searchadd="${p.id}">Add</button></div>`).join(""):'<p class="empty">Type to discover a handmade favourite.</p>';document.querySelectorAll("[data-searchadd]").forEach(b=>b.onclick=()=>addToCart(+b.dataset.searchadd))};
-
-renderCategories();renderProducts();updateCounts();
-
-const loginModal=document.querySelector("#loginModal");
-const openLogin=()=>loginModal.classList.add("open");
-const closeLogin=()=>loginModal.classList.remove("open");
-document.querySelector("#accountBtn").onclick=openLogin;
-document.querySelector("#mobileAccount").onclick=(e)=>{e.preventDefault();openLogin();document.querySelector("#mobileMenu").classList.remove("open")};
-document.querySelector("#loginClose").onclick=closeLogin;
-document.querySelector("#googleLogin").onclick=()=>alert("Google Login will be connected after we add the secure authentication backend.");
-document.querySelector("#emailLoginBtn").onclick=()=>alert("Secure email login will be connected after we add the authentication backend.");
-document.querySelector("#signupBtn").onclick=()=>alert("Signup will be connected after we add the authentication backend.");
+function checkoutWhatsApp(){
+ if(!cart.length)return;
+ const lines=cart.map(i=>{const p=products.find(x=>x.id===i.id);return `• ${p.name} × ${i.qty} — ${money(p.price*i.qty)}`;}).join("%0A");
+ const total=cart.reduce((s,i)=>{const p=products.find(x=>x.id===i.id);return s+p.price*i.qty},0);
+ const msg=`Hello Ananya's Craft & Creativity!%0A%0AI'd like to place an order:%0A${lines}%0A%0ATotal: ${encodeURIComponent(money(total))}%0A%0AName:%0AAddress:%0APincode:%0APhone:%0A%0APlease confirm the order and delivery charge.`;
+ window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`,"_blank");
+}
+function openPanel(id){qsa(".side-panel").forEach(x=>x.classList.remove("open"));qs("#"+id)?.classList.add("open");qs("#overlay")?.classList.add("open");}
+function closePanels(){qsa(".side-panel").forEach(x=>x.classList.remove("open"));qs("#overlay")?.classList.remove("open");}
+function init(){
+ renderCategories();renderProducts();renderCart();updateCounts();
+ const search=qs("#searchInput");if(search)search.oninput=e=>{searchTerm=e.target.value.toLowerCase().trim();renderProducts();};
+ qs("#cartBtn")?.addEventListener("click",()=>openPanel("cartPanel"));
+ qs("#wishBtn")?.addEventListener("click",()=>{currentCategory="All";searchTerm="";if(search)search.value="";renderProducts();document.querySelector("#shop")?.scrollIntoView({behavior:"smooth"});});
+ qs("#closePanels")?.addEventListener("click",closePanels);qs("#overlay")?.addEventListener("click",closePanels);
+ qs("#checkoutBtn")?.addEventListener("click",checkoutWhatsApp);
+ qs("#accountBtn")?.addEventListener("click",()=>qs("#loginModal")?.classList.add("open"));
+ qs("#loginClose")?.addEventListener("click",()=>qs("#loginModal")?.classList.remove("open"));
+ qs("#mobileAccount")?.addEventListener("click",e=>{e.preventDefault();qs("#loginModal")?.classList.add("open");qs("#mobileMenu")?.classList.remove("open")});
+ qs("#menuBtn")?.addEventListener("click",()=>qs("#mobileMenu")?.classList.toggle("open"));
+ qs("#googleLogin")?.addEventListener("click",()=>alert("Secure Google authentication will be connected when the backend is added."));
+ qs("#emailLoginBtn")?.addEventListener("click",()=>alert("Secure email authentication will be connected when the backend is added."));
+ qs("#signupBtn")?.addEventListener("click",()=>alert("Account creation will be connected when the backend is added."));
+ qs("#adminLink")?.addEventListener("click",()=>location.href="admin.html");
+}
+document.addEventListener("DOMContentLoaded",init);
