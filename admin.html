@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Panel • Ananya's Craft & Creativity</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#f8f1ec;
+  color:#30252b;
+  font-family:Arial,sans-serif
+}
+.admin{
+  max-width:1150px;
+  margin:auto;
+  padding:30px 18px 70px
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px
+}
+.top h1{
+  margin:0;
+  font-family:Georgia,serif;
+  font-size:42px
+}
+.top a{
+  color:#8e4e70;
+  text-decoration:none
+}
+.grid{
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:20px
+}
+.card{
+  background:white;
+  border:1px solid #eadfd9;
+  border-radius:12px;
+  padding:22px;
+  box-shadow:0 5px 20px #00000008
+}
+.card h2{
+  font-family:Georgia,serif;
+  margin:0 0 18px
+}
+.field{
+  margin:14px 0
+}
+.field label{
+  display:block;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-bottom:6px;
+  color:#765f69
+}
+.field input,
+.field select,
+.field textarea{
+  width:100%;
+  padding:12px;
+  border:1px solid #ddd0d6;
+  border-radius:7px;
+  outline:none;
+  background:#fff
+}
+.field textarea{
+  min-height:90px;
+  resize:vertical
+}
+.upload{
+  border:2px dashed #cda7ba;
+  border-radius:8px;
+  padding:18px;
+  text-align:center;
+  cursor:pointer;
+  background:#fff8fb
+}
+.upload input{
+  display:none
+}
+.preview{
+  height:180px;
+  margin-top:10px;
+  background:#f2e6e2;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  color:#927d87
+}
+.preview img{
+  width:100%;
+  height:100%;
+  object-fit:cover
+}
+.save{
+  width:100%;
+  padding:13px;
+  border:0;
+  border-radius:7px;
+  background:#9e567d;
+  color:white;
+  font-weight:bold;
+  cursor:pointer
+}
+.clear{
+  width:100%;
+  margin-top:8px;
+  padding:11px;
+  background:white;
+  border:1px solid #c9adb9;
+  color:#8e4e70;
+  border-radius:7px;
+  cursor:pointer
+}
+.search{
+  width:100%;
+  padding:12px;
+  border:1px solid #ddd0d6;
+  border-radius:7px;
+  margin-bottom:15px
+}
+.row{
+  display:grid;
+  grid-template-columns:75px 1fr auto;
+  gap:14px;
+  padding:13px 0;
+  border-bottom:1px solid #eee;
+  align-items:center
+}
+.thumb{
+  width:75px;
+  height:75px;
+  background:#f2e6e2;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  font-size:28px
+}
+.thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover
+}
+.row h3{
+  margin:0;
+  font-family:Georgia,serif;
+  font-size:20px
+}
+.meta{
+  font-size:10px;
+  color:#777;
+  margin-top:5px
+}
+.actions{
+  display:flex;
+  gap:6px
+}
+.actions button{
+  padding:7px 10px;
+  border:1px solid #d8c3ce;
+  background:white;
+  border-radius:5px;
+  cursor:pointer
+}
+.actions .delete{
+  color:#a33
+}
+.empty{
+  text-align:center;
+  padding:30px;
+  color:#888
+}
+.note{
+  background:#fff5d9;
+  padding:12px;
+  border-radius:7px;
+  font-size:11px;
+  margin-bottom:18px
+}
+
+@media(max-width:800px){
+  .grid{
+    grid-template-columns:1fr
+  }
+  .top h1{
+    font-size:32px
+  }
+  .row{
+    grid-template-columns:60px 1fr
+  }
+  .actions{
+    grid-column:2
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="admin">
+
+<div class="top">
+  <h1>Product Studio</h1>
+  <a href="index.html">← View Shop</a>
+</div>
+
+<div class="note">
+  Add and manage your handmade products from here.
+  Product data is currently saved in this browser.
+  We will connect this panel to Supabase next.
+</div>
+
+<div class="grid">
+
+<!-- ADD PRODUCT -->
+
+<section class="card">
+
+<h2 id="formTitle">Add Product</h2>
+
+<form id="productForm">
+
+<input type="hidden" id="productId">
+
+<div class="field">
+<label>Product Name</label>
+<input id="name"
+       required
+       placeholder="Example: Handmade Rose Candle">
+</div>
+
+<div class="field">
+<label>Category</label>
+
+<select id="category">
+
+<option>Home Decor</option>
+<option>Skincare</option>
+<option>Handmade Bags</option>
+<option>Candles</option>
+<option>Jewellery</option>
+<option>Gift Hampers</option>
+<option>Custom Order</option>
+<option>New Arrivals</option>
+
+</select>
+</div>
+
+<div class="field">
+<label>Price ₹</label>
+<input id="price"
+       type="number"
+       min="0"
+       required
+       placeholder="499">
+</div>
+
+<div class="field">
+<label>Stock</label>
+<input id="stock"
+       type="number"
+       min="0"
+       required
+       placeholder="10">
+</div>
+
+<div class="field">
+<label>Badge</label>
+
+<select id="badge">
+
+<option value="">None</option>
+<option>New</option>
+<option>Best Seller</option>
+<option>Sale</option>
+
+</select>
+</div>
+
+<div class="field">
+
+<label>Product Image</label>
+
+<label class="upload">
+
+📸 Choose Product Image
+
+<input
+id="image"
+type="file"
+accept="image/*">
+
+</label>
+
+<div
+class="preview"
+id="preview">
+
+Image preview
+
+</div>
+
+</div>
+
+<div class="field">
+
+<label>Description</label>
+
+<textarea
+id="description"
+placeholder="Write a short product description..."></textarea>
+
+</div>
+
+<button
+class="save"
+type="submit">
+
+SAVE PRODUCT
+
+</button>
+
+<button
+class="clear"
+type="button"
+id="clear">
+
+CLEAR
+
+</button>
+
+</form>
+
+</section>
+
+
+<!-- PRODUCT LIST -->
+
+<section class="card">
+
+<h2>Your Products</h2>
+
+<input
+class="search"
+id="search"
+placeholder="Search products...">
+
+<div id="list"></div>
+
+</section>
+
+</div>
+</div>
+
+
+<script>
+
+const STORAGE_KEY="ananyaProductsV2";
+
+let products=
+JSON.parse(
+localStorage.getItem(STORAGE_KEY)||"[]"
+);
+
+let imageData="";
+
+
+const $=
+id=>document.getElementById(id);
+
+
+/* SAVE DATA */
+
+function saveProducts(){
+
+localStorage.setItem(
+STORAGE_KEY,
+JSON.stringify(products)
+);
+
+renderProducts();
+
+}
+
+
+/* SHOW PRODUCTS */
+
+function renderProducts(){
+
+const query=
+$("search").value
+.toLowerCase();
+
+const filtered=
+products.filter(product=>
+
+(
+product.name+
+" "+
+product.category
+)
+.toLowerCase()
+.includes(query)
+
+);
+
+
+if(!filtered.length){
+
+$("list").innerHTML=`
+
+<div class="empty">
+
+No products yet.<br><br>
+
+Add your first product from the left.
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+$("list").innerHTML=
+
+filtered.map(product=>`
+
+<div class="row">
+
+<div class="thumb">
+
+${
+product.image
+
+?
+
+`<img
+src="${product.image}"
+alt="${product.name}">`
+
+:
+
+"✿"
+
+}
+
+</div>
+
+
+<div>
+
+<h3>
+${product.name}
+</h3>
+
+<div class="meta">
+
+${product.category}
+
+· ₹${product.price}
+
+· Stock: ${product.stock}
+
+${product.badge
+? " · "+product.badge
+: ""}
+
+</div>
+
+<div class="meta">
+
+${product.description||""}
+
+</div>
+
+</div>
+
+
+<div class="actions">
+
+<button
+onclick="editProduct('${product.id}')">
+
+Edit
+
+</button>
+
+<button
+class="delete"
+onclick="deleteProduct('${product.id}')">
+
+Delete
+
+</button>
+
+</div>
+
+</div>
+
+`).join("");
+
+}
+
+
+/* IMAGE */
+
+$("image").addEventListener(
+"change",
+function(event){
+
+const file=
+event.target.files[0];
+
+if(!file)return;
+
+
+/* 3MB limit */
+
+if(file.size>3*1024*1024){
+
+alert(
+"Please choose an image under 3 MB."
+);
+
+$("image").value="";
+
+return;
+
+}
+
+
+const reader=
+new FileReader();
+
+
+reader.onload=function(){
+
+imageData=
+reader.result;
+
+$("preview").innerHTML=
+
+`<img
+src="${imageData}"
+alt="Product preview">`;
+
+};
+
+
+reader.readAsDataURL(file);
+
+});
+
+
+/* ADD / UPDATE PRODUCT */
+
+$("productForm")
+.addEventListener(
+"submit",
+function(event){
+
+event.preventDefault();
+
+
+const id=
+$("productId").value;
+
+
+const product={
+
+id:
+id ||
+Date.now().toString(),
+
+name:
+$("name").value.trim(),
+
+category:
+$("category").value,
+
+price:
+Number($("price").value),
+
+stock:
+Number($("stock").value),
+
+badge:
+$("badge").value,
+
+description:
+$("description").value.trim(),
+
+image:
+imageData
+
+};
+
+
+/* EDIT */
+
+if(id){
+
+const index=
+products.findIndex(
+p=>p.id===id
+);
+
+
+if(index!==-1){
+
+product.image=
+imageData ||
+products[index].image;
+
+products[index]=product;
+
+}
+
+}
+
+/* ADD */
+
+else{
+
+products.unshift(product);
+
+}
+
+
+saveProducts();
+
+clearForm();
+
+alert(
+"Product saved successfully!"
+);
+
+});
+
+
+/* EDIT */
+
+function editProduct(id){
+
+const product=
+products.find(
+p=>p.id===id
+);
+
+if(!product)return;
+
+
+$("productId").value=
+product.id;
+
+$("name").value=
+product.name;
+
+$("category").value=
+product.category;
+
+$("price").value=
+product.price;
+
+$("stock").value=
+product.stock;
+
+$("badge").value=
+product.badge || "";
+
+$("description").value=
+product.description || "";
+
+
+imageData=
+product.image || "";
+
+
+$("preview").innerHTML=
+
+imageData
+
+?
+
+`<img
+src="${imageData}"
+alt="Preview">`
+
+:
+
+"Image preview";
+
+
+$("formTitle").textContent=
+"Edit Product";
+
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
+}
+
+
+/* DELETE */
+
+function deleteProduct(id){
+
+const product=
+products.find(
+p=>p.id===id
+);
+
+if(!product)return;
+
+
+if(
+confirm(
+"Delete "+product.name+"?"
+)
+){
+
+products=
+products.filter(
+p=>p.id!==id
+);
+
+saveProducts();
+
+}
+
+}
+
+
+/* CLEAR */
+
+function clearForm(){
+
+$("productId").value="";
+
+$("name").value="";
+
+$("price").value="";
+
+$("stock").value="";
+
+$("badge").value="";
+
+$("description").value="";
+
+$("image").value="";
+
+imageData="";
+
+$("preview").textContent=
+"Image preview";
+
+$("formTitle").textContent=
+"Add Product";
+
+}
+
+
+/* BUTTONS */
+
+$("clear").onclick=
+clearForm;
+
+
+$("search").oninput=
+renderProducts;
+
+
+/* START */
+
+renderProducts();
+
+</script>
+
+</body>
+</html>
