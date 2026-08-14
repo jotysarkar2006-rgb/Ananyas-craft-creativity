@@ -1,91 +1,41 @@
-/* Ananya's Craft & Creativity — complete storefront */
-const WA_NUMBER="917890605022";
-const DEFAULT_CATEGORIES=["All","Rakhi","Jewellery","Hair Accessories","Gifts","Custom Creations","Home Decor","Skincare","New Arrivals","Best Sellers"];
-
-const DEFAULT_PRODUCTS=[
- {id:1,name:"Blush Bloom Rakhi",cat:"Rakhi",price:249,desc:"A delicate handmade floral rakhi.",stock:10,image:"",badge:"New"},
- {id:2,name:"Pearl Petal Bracelet",cat:"Jewellery",price:399,desc:"Soft pearls with a handcrafted finish.",stock:8,image:"",badge:""},
- {id:3,name:"Little Love Gift",cat:"Gifts",price:499,desc:"A thoughtful handmade gift set.",stock:5,image:"",badge:"Best Seller"},
- {id:4,name:"Butterfly Charm",cat:"Jewellery",price:349,desc:"A playful little charm made with care.",stock:7,image:"",badge:""},
- {id:5,name:"Floral Hair Bow",cat:"Hair Accessories",price:199,desc:"A pretty handmade accessory.",stock:12,image:"",badge:""},
- {id:6,name:"Custom Keepsake",cat:"Custom Creations",price:599,desc:"Made specially for your story.",stock:4,image:"",badge:"Custom"},
- {id:7,name:"Handmade Glow",cat:"Skincare",price:299,desc:"A gentle handmade self-care pick.",stock:9,image:"",badge:""},
- {id:8,name:"Festive Mini Gift",cat:"Gifts",price:449,desc:"A sweet little handmade surprise.",stock:6,image:"",badge:""}
-];
-let products=JSON.parse(localStorage.getItem("ananyaProducts")||"null")||DEFAULT_PRODUCTS;
-let cart=JSON.parse(localStorage.getItem("ananyaCart")||"[]");
-let wishlist=JSON.parse(localStorage.getItem("ananyaWish")||"[]");
-let currentCategory="All";
-let searchTerm="";
-const money=n=>"₹"+Number(n).toLocaleString("en-IN");
-const qs=s=>document.querySelector(s);
-const qsa=s=>[...document.querySelectorAll(s)];
-function persist(){localStorage.setItem("ananyaProducts",JSON.stringify(products));localStorage.setItem("ananyaCart",JSON.stringify(cart));localStorage.setItem("ananyaWish",JSON.stringify(wishlist));updateCounts();}
-function updateCounts(){const c=cart.reduce((a,x)=>a+x.qty,0);const w=wishlist.length;const cc=qs("#cartCount"),wc=qs("#wishCount");if(cc)cc.textContent=c;if(wc)wc.textContent=w;}
-function imageMarkup(p){return p.image?`<img src="${p.image}" alt="${p.name}" loading="lazy">`:`<span class="product-placeholder">♡<small>handmade</small></span>`;}
-function productCard(p){
- const liked=wishlist.includes(p.id), sold=Number(p.stock||0)<=0;
- return `<article class="product-card" data-name="${p.name.toLowerCase()}">
-  <div class="product-image">${imageMarkup(p)}${p.badge?`<b class="product-badge">${p.badge}</b>`:""}<button class="wish ${liked?"liked":""}" data-wish="${p.id}" aria-label="Wishlist">${liked?"♥":"♡"}</button></div>
-  <div class="product-info"><small>${p.cat}</small><h3>${p.name}</h3><p class="product-price">${money(p.price)}</p><p class="product-desc">${p.desc||""}</p>
-   <div class="stock-note">${sold?"Sold out":`${p.stock} available`}</div>
-   <div class="product-actions"><button class="mini-btn add" data-add="${p.id}" ${sold?"disabled":""}>${sold?"Sold out":"Add to cart"}</button><button class="mini-btn" data-buy="${p.id}" ${sold?"disabled":""}>WhatsApp</button></div>
-  </div></article>`;
-}
-function filteredProducts(){
- return products.filter(p=>(currentCategory==="All"||p.cat===currentCategory||currentCategory==="Best Sellers"&&p.badge==="Best Seller"||currentCategory==="New Arrivals"&&p.badge==="New") && (!searchTerm||`${p.name} ${p.cat} ${p.desc}`.toLowerCase().includes(searchTerm)));
-}
-function renderProducts(){
- const grid=qs("#productGrid"); if(!grid)return;
- const list=filteredProducts(); grid.innerHTML=list.length?list.map(productCard).join(""):`<div class="empty-state"><h3>No pieces found.</h3><p>Try another search or category.</p></div>`;
- qsa("[data-add]").forEach(b=>b.onclick=()=>addToCart(Number(b.dataset.add)));
- qsa("[data-wish]").forEach(b=>b.onclick=()=>toggleWish(Number(b.dataset.wish)));
- qsa("[data-buy]").forEach(b=>b.onclick=()=>buyWhatsApp(Number(b.dataset.buy)));
-}
-function renderCategories(){
- const box=qs("#categoryList");if(!box)return;
- box.innerHTML=DEFAULT_CATEGORIES.map(c=>`<button class="category-pill ${c===currentCategory?"active":""}" data-cat="${c}">${c}</button>`).join("");
- qsa("[data-cat]").forEach(b=>b.onclick=()=>{currentCategory=b.dataset.cat;renderCategories();renderProducts();document.querySelector("#shop")?.scrollIntoView({behavior:"smooth"});});
-}
-function addToCart(id){const p=products.find(x=>x.id===id);if(!p||p.stock<=0)return;const item=cart.find(x=>x.id===id);if(item){if(item.qty<p.stock)item.qty++;}else cart.push({id,qty:1});persist();renderCart();openPanel("cartPanel");}
-function removeCart(id){cart=cart.filter(x=>x.id!==id);persist();renderCart();}
-function changeQty(id,d){const p=products.find(x=>x.id===id),i=cart.find(x=>x.id===id);if(!i||!p)return;i.qty=Math.max(1,Math.min(p.stock,i.qty+d));persist();renderCart();}
-function renderCart(){
- const box=qs("#cartItems"),total=qs("#cartTotal");if(!box)return;
- if(!cart.length){box.innerHTML='<div class="empty-state small"><p>Your cart is waiting for something lovely.</p></div>';if(total)total.textContent="₹0";return;}
- let sum=0;
- box.innerHTML=cart.map(i=>{const p=products.find(x=>x.id===i.id);if(!p)return"";sum+=p.price*i.qty;return `<div class="cart-item"><div class="cart-thumb">${imageMarkup(p)}</div><div><h4>${p.name}</h4><small>${money(p.price)} × ${i.qty}</small><div class="qty"><button data-minus="${p.id}">−</button><span>${i.qty}</span><button data-plus="${p.id}">+</button><button class="remove" data-remove="${p.id}">Remove</button></div></div></div>`;}).join("");
- qsa("[data-minus]").forEach(b=>b.onclick=()=>changeQty(Number(b.dataset.minus),-1));qsa("[data-plus]").forEach(b=>b.onclick=()=>changeQty(Number(b.dataset.plus),1));qsa("[data-remove]").forEach(b=>b.onclick=()=>removeCart(Number(b.dataset.remove)));if(total)total.textContent=money(sum);
-}
-function toggleWish(id){wishlist.includes(id)?wishlist=wishlist.filter(x=>x!==id):wishlist.push(id);persist();renderProducts();}
-function buyWhatsApp(id){
- const p=products.find(x=>x.id===id);if(!p)return;
- const msg=`Hello Ananya's Craft & Creativity!%0A%0AI want to order:%0A• ${encodeURIComponent(p.name)}%0A• Price: ${encodeURIComponent(money(p.price))}%0A• Quantity: 1%0A%0APlease confirm availability and delivery details.`;
- window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`,"_blank");
-}
-function checkoutWhatsApp(){
- if(!cart.length)return;
- const lines=cart.map(i=>{const p=products.find(x=>x.id===i.id);return `• ${p.name} × ${i.qty} — ${money(p.price*i.qty)}`;}).join("%0A");
- const total=cart.reduce((s,i)=>{const p=products.find(x=>x.id===i.id);return s+p.price*i.qty},0);
- const msg=`Hello Ananya's Craft & Creativity!%0A%0AI'd like to place an order:%0A${lines}%0A%0ATotal: ${encodeURIComponent(money(total))}%0A%0AName:%0AAddress:%0APincode:%0APhone:%0A%0APlease confirm the order and delivery charge.`;
- window.open(`https://wa.me/${WA_NUMBER}?text=${msg}`,"_blank");
-}
-function openPanel(id){qsa(".side-panel").forEach(x=>x.classList.remove("open"));qs("#"+id)?.classList.add("open");qs("#overlay")?.classList.add("open");}
-function closePanels(){qsa(".side-panel").forEach(x=>x.classList.remove("open"));qs("#overlay")?.classList.remove("open");}
-function init(){
- renderCategories();renderProducts();renderCart();updateCounts();
- const search=qs("#searchInput");if(search)search.oninput=e=>{searchTerm=e.target.value.toLowerCase().trim();renderProducts();};
- qs("#cartBtn")?.addEventListener("click",()=>openPanel("cartPanel"));
- qs("#wishBtn")?.addEventListener("click",()=>{currentCategory="All";searchTerm="";if(search)search.value="";renderProducts();document.querySelector("#shop")?.scrollIntoView({behavior:"smooth"});});
- qs("#closePanels")?.addEventListener("click",closePanels);qs("#overlay")?.addEventListener("click",closePanels);
- qs("#checkoutBtn")?.addEventListener("click",checkoutWhatsApp);
- qs("#accountBtn")?.addEventListener("click",()=>qs("#loginModal")?.classList.add("open"));
- qs("#loginClose")?.addEventListener("click",()=>qs("#loginModal")?.classList.remove("open"));
- qs("#mobileAccount")?.addEventListener("click",e=>{e.preventDefault();qs("#loginModal")?.classList.add("open");qs("#mobileMenu")?.classList.remove("open")});
- qs("#menuBtn")?.addEventListener("click",()=>qs("#mobileMenu")?.classList.toggle("open"));
- qs("#googleLogin")?.addEventListener("click",()=>alert("Secure Google authentication will be connected when the backend is added."));
- qs("#emailLoginBtn")?.addEventListener("click",()=>alert("Secure email authentication will be connected when the backend is added."));
- qs("#signupBtn")?.addEventListener("click",()=>alert("Account creation will be connected when the backend is added."));
- qs("#adminLink")?.addEventListener("click",()=>location.href="admin.html");
-}
-document.addEventListener("DOMContentLoaded",init);
+const WA="917890605022";
+const cats=["All","Rakhi","Jewellery","Hair Accessories","Gifts","Custom Creations","Home Decor","Skincare","New Arrivals","Best Sellers"];
+const defaults=[
+{id:1,name:"Blush Bloom Rakhi",cat:"Rakhi",price:249,stock:10,badge:"New",desc:"A delicate handmade floral rakhi.",image:""},
+{id:2,name:"Pearl Petal Bracelet",cat:"Jewellery",price:399,stock:8,badge:"",desc:"Soft pearls with a handcrafted finish.",image:""},
+{id:3,name:"Little Love Gift",cat:"Gifts",price:499,stock:5,badge:"Best Seller",desc:"A thoughtful handmade gift set.",image:""},
+{id:4,name:"Butterfly Charm",cat:"Jewellery",price:349,stock:7,badge:"",desc:"A playful handmade charm.",image:""},
+{id:5,name:"Floral Hair Bow",cat:"Hair Accessories",price:199,stock:12,badge:"",desc:"A pretty handmade accessory.",image:""},
+{id:6,name:"Custom Keepsake",cat:"Custom Creations",price:599,stock:4,badge:"Custom",desc:"Made specially for your story.",image:""},
+{id:7,name:"Handmade Glow",cat:"Skincare",price:299,stock:9,badge:"",desc:"A gentle handmade self-care pick.",image:""},
+{id:8,name:"Festive Mini Gift",cat:"Gifts",price:449,stock:6,badge:"",desc:"A sweet little handmade surprise.",image:""}];
+let products=JSON.parse(localStorage.getItem("ananyaProducts")||"null")||defaults;
+let cart=JSON.parse(localStorage.getItem("ananyaCart")||"[]"),wish=JSON.parse(localStorage.getItem("ananyaWish")||"[]");
+let category="All",query="";
+const money=n=>"₹"+Number(n).toLocaleString("en-IN"), $=s=>document.querySelector(s);
+function save(){localStorage.setItem("ananyaProducts",JSON.stringify(products));localStorage.setItem("ananyaCart",JSON.stringify(cart));localStorage.setItem("ananyaWish",JSON.stringify(wish));counts();}
+function counts(){$("#cartCount").textContent=cart.reduce((s,x)=>s+x.qty,0);$("#wishCount").textContent=wish.length}
+function image(p){return p.image?`<img src="${p.image}" alt="${p.name}">`:`<span>${p.cat==="Jewellery"?"💍":p.cat==="Skincare"?"🌸":p.cat==="Gifts"?"🎁":"✿"}</span>`}
+function filtered(){return products.filter(p=>(category==="All"||p.cat===category||(category==="New Arrivals"&&p.badge==="New")||(category==="Best Sellers"&&p.badge==="Best Seller"))&&(!query||(`${p.name} ${p.cat} ${p.desc}`).toLowerCase().includes(query)))}
+function renderCats(){let el=$("#categoryList");el.innerHTML=cats.map(c=>`<button class="cat ${c===category?"active":""}" data-cat="${c}">${c}</button>`).join("");document.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>{category=b.dataset.cat;renderCats();renderProducts();location.hash="shop"})}
+function card(p){let liked=wish.includes(p.id),sold=p.stock<=0;return `<article class="product"><div class="photo">${image(p)}${p.badge?`<b class="badge">${p.badge}</b>`:""}<button class="wish" data-wish="${p.id}">${liked?"♥":"♡"}</button></div><div class="product-body"><small>${p.cat}</small><h3>${p.name}</h3><p>${p.desc}</p><p class="price">${money(p.price)}</p><small>${sold?"Sold out":p.stock+" available"}</small><div class="product-actions"><button class="add" data-add="${p.id}" ${sold?"disabled":""}>${sold?"Sold out":"Add to cart"}</button><button data-buy="${p.id}" ${sold?"disabled":""}>WhatsApp</button></div></div></article>`}
+function renderProducts(){let list=filtered();$("#products").innerHTML=list.length?list.map(card).join(""):'<div class="empty"><h3>No pieces found</h3><p>Try another search or category.</p></div>';document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>add(+b.dataset.add));document.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>buy(+b.dataset.buy));document.querySelectorAll("[data-wish]").forEach(b=>b.onclick=()=>toggleWish(+b.dataset.wish))}
+function add(id){let p=products.find(x=>x.id===id);if(!p||p.stock<1)return;let i=cart.find(x=>x.id===id);if(i){if(i.qty<p.stock)i.qty++}else cart.push({id,qty:1});save();renderCart();openCart()}
+function toggleWish(id){wish=wish.includes(id)?wish.filter(x=>x!==id):[...wish,id];save();renderProducts()}
+function buy(id){let p=products.find(x=>x.id===id);let text=encodeURIComponent(`Hello Ananya's Craft & Creativity!%0A%0AI want to order:%0A${p.name}%0APrice: ${money(p.price)}%0AQuantity: 1%0A%0AName:%0AAddress:%0APincode:%0APhone:`);window.open(`https://wa.me/${WA}?text=${text}`,"_blank")}
+function renderCart(){let box=$("#cartItems");if(!cart.length){box.innerHTML='<div class="empty">Your cart is waiting for something lovely. ♥</div>';$("#total").textContent="₹0";return}let total=0;box.innerHTML=cart.map(i=>{let p=products.find(x=>x.id===i.id);if(!p)return"";total+=p.price*i.qty;return `<div class="cart-row"><div class="cart-img">${image(p)}</div><div><h4>${p.name}</h4><small>${money(p.price)} × ${i.qty}</small><div class="qty"><button data-q="${p.id}" data-d="-1">−</button><span>${i.qty}</span><button data-q="${p.id}" data-d="1">+</button><button data-r="${p.id}">Remove</button></div></div></div>`}).join("");$("#total").textContent=money(total);document.querySelectorAll("[data-q]").forEach(b=>b.onclick=()=>qty(+b.dataset.q,+b.dataset.d));document.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{cart=cart.filter(x=>x.id!==+b.dataset.r);save();renderCart()})}
+function qty(id,d){let i=cart.find(x=>x.id===id),p=products.find(x=>x.id===id);if(!i)return;i.qty=Math.max(1,Math.min(p.stock,i.qty+d));save();renderCart()}
+function openCart(){$("#cartPanel").classList.add("show");$("#overlay").classList.add("show")}
+function closeAll(){$("#cartPanel").classList.remove("show");$("#overlay").classList.remove("show");$("#loginModal").classList.remove("show")}
+function checkout(){if(!cart.length)return;let lines=cart.map(i=>{let p=products.find(x=>x.id===i.id);return `• ${p.name} × ${i.qty} — ${money(p.price*i.qty)}`}).join("%0A"),total=cart.reduce((s,i)=>s+products.find(p=>p.id===i.id).price*i.qty,0);let text=`Hello Ananya's Craft & Creativity!%0A%0AI'd like to place an order:%0A${lines}%0A%0ATotal: ${encodeURIComponent(money(total))}%0A%0AName:%0AAddress:%0APincode:%0APhone:%0A%0APlease confirm availability and delivery charge.`;window.open(`https://wa.me/${WA}?text=${text}`,"_blank")}
+function toast(t){let x=$("#toast");x.textContent=t;x.classList.add("show");setTimeout(()=>x.classList.remove("show"),2000)}
+document.addEventListener("DOMContentLoaded",()=>{renderCats();renderProducts();renderCart();counts();
+$("#search").oninput=e=>{query=e.target.value.toLowerCase().trim();renderProducts()};
+$("#cartBtn").onclick=openCart;$("#closeCart").onclick=closeAll;$("#overlay").onclick=closeAll;$("#checkout").onclick=checkout;
+$("#wishlistBtn").onclick=()=>{category="All";query="";$("#search").value="";renderCats();renderProducts();location.hash="shop"};
+$("#accountBtn").onclick=()=>$("#loginModal").classList.add("show");$("#closeLogin").onclick=closeAll;
+$("#googleLogin").onclick=()=>toast("Google login will be connected with the secure backend.");
+$("#emailLogin").onclick=()=>toast("Email login will be connected with the secure backend.");
+$("#signup").onclick=()=>toast("Signup will be connected with the secure backend.");
+$("#newsletter").onsubmit=e=>{e.preventDefault();toast("Thank you for joining our newsletter!");e.target.reset()};
+$("#menuBtn").onclick=()=>$("#nav").classList.toggle("open")});

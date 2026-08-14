@@ -1,24 +1,7 @@
-# Ananya's Craft & Creativity — Complete Storefront
+# Ananya's Craft & Creativity — Final Complete Frontend
+Includes premium handmade homepage, responsive design, categories including Skincare, search, wishlist, cart, WhatsApp ordering, contact details, login UI, newsletter UI, and Product Studio with direct image selection, add/edit/delete, price, stock, badge and description.
+Contact: +91 78906 05022
+Email: ananyabarik623@gmail.com
+Instagram: @projaa_poti
 
-This is the complete front-end storefront prototype.
-
-Included:
-- Premium responsive home page
-- Logo and brand story
-- Search and category filters
-- Wishlist
-- Shopping cart with quantity/stock controls
-- WhatsApp single-product and cart checkout
-- Login UI
-- Product Studio admin page
-- Direct product image selection from Mac/iPhone-compatible browser file picker
-- Image preview
-- Add / edit / delete products
-- Price, stock, category, badge and description
-- Product search in admin
-- Product export/import backup
-- Skincare category
-- Responsive mobile layout
-
-Important:
-The current catalog is stored in browser localStorage. This means product changes are not shared across customers/devices. The next production step is to connect a secure cloud database and admin authentication. Do not put payment secrets in this front-end.
+Important: this frontend stores the catalog in browser localStorage. For a production store where every customer's device sees the same products and where login is secure, connect a cloud database/auth provider next. Do not put payment secrets in frontend code.
