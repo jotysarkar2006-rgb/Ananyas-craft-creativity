@@ -1,28 +1,36 @@
 const WHATSAPP="917890605022";
-const products=[
- {id:1,name:"Blush Bloom Rakhi",cat:"Rakhi",price:249,desc:"A delicate handmade floral rakhi."},
- {id:2,name:"Pearl Petal Bracelet",cat:"Jewellery",price:399,desc:"Soft pearls with a handcrafted finish."},
- {id:3,name:"Little Love Gift",cat:"Gifts",price:499,desc:"A thoughtful handmade gift set."},
- {id:4,name:"Butterfly Charm",cat:"Jewellery",price:349,desc:"A playful little charm made with care."},
- {id:5,name:"Floral Hair Bow",cat:"Hair Accessories",price:199,desc:"A pretty handmade accessory."},
- {id:6,name:"Custom Keepsake",cat:"Custom Creations",price:599,desc:"Made specially for your story."},
- {id:7,name:"Handmade Glow",cat:"Skincare",price:299,desc:"A gentle handmade self-care pick."},
- {id:8,name:"Festive Mini Gift",cat:"Gifts",price:449,desc:"A sweet little handmade surprise."}
+const DEFAULT_PRODUCTS=[
+ {id:1,name:"Blush Bloom Rakhi",cat:"Rakhi",price:249,desc:"A delicate handmade floral rakhi.",stock:10,image:""},
+ {id:2,name:"Pearl Petal Bracelet",cat:"Jewellery",price:399,desc:"Soft pearls with a handcrafted finish.",stock:8,image:""},
+ {id:3,name:"Little Love Gift",cat:"Gifts",price:499,desc:"A thoughtful handmade gift set.",stock:5,image:""},
+ {id:4,name:"Butterfly Charm",cat:"Jewellery",price:349,desc:"A playful little charm made with care.",stock:7,image:""},
+ {id:5,name:"Floral Hair Bow",cat:"Hair Accessories",price:199,desc:"A pretty handmade accessory.",stock:12,image:""},
+ {id:6,name:"Custom Keepsake",cat:"Custom Creations",price:599,desc:"Made specially for your story.",stock:4,image:""},
+ {id:7,name:"Handmade Glow",cat:"Skincare",price:299,desc:"A gentle handmade self-care pick.",stock:9,image:""},
+ {id:8,name:"Festive Mini Gift",cat:"Gifts",price:449,desc:"A sweet little handmade surprise.",stock:6,image:""}
 ];
+let products=JSON.parse(localStorage.getItem("ananyaProducts")||"null")||DEFAULT_PRODUCTS;
 const categories=["Rakhi","Jewellery","Hair Accessories","Handmade Gifts","Custom Creations","Home Decor","Skincare","New Arrivals","Best Sellers"];
 let cart=JSON.parse(localStorage.getItem("ananyaCart")||"[]");
 let wishlist=JSON.parse(localStorage.getItem("ananyaWish")||"[]");
 
 const money=n=>"₹"+n.toLocaleString("en-IN");
-function save(){localStorage.setItem("ananyaCart",JSON.stringify(cart));localStorage.setItem("ananyaWish",JSON.stringify(wishlist));updateCounts();}
+function save(){
+ localStorage.setItem("ananyaCart",JSON.stringify(cart));
+ localStorage.setItem("ananyaWish",JSON.stringify(wishlist));
+ localStorage.setItem("ananyaProducts",JSON.stringify(products));
+ updateCounts();
+}
 function updateCounts(){document.querySelector("#cartCount").textContent=cart.reduce((a,x)=>a+x.qty,0);document.querySelector("#wishCount").textContent=wishlist.length;}
 
 function productCard(p){
  const liked=wishlist.includes(p.id);
+ const image=p.image ? `<img src="${p.image}" alt="${p.name}" loading="lazy">` : `<span class="product-placeholder">♡<small>handmade</small></span>`;
+ const soldOut=Number(p.stock||0)<=0;
  return `<article class="product-card">
-  <div class="product-image"><button class="wish" data-wish="${p.id}">${liked?"♥":"♡"}</button><span>handmade</span></div>
+  <div class="product-image">${image}<button class="wish" data-wish="${p.id}">${liked?"♥":"♡"}</button><span>${soldOut?"sold out":"handmade"}</span></div>
   <div class="product-info"><small>${p.cat}</small><h3>${p.name}</h3><p>${money(p.price)}</p>
-  <div class="product-actions"><button class="mini-btn add" data-add="${p.id}">Add to cart</button><button class="mini-btn" data-buy="${p.id}">WhatsApp</button></div></div>
+  <div class="product-actions"><button class="mini-btn add" data-add="${p.id}" ${soldOut?"disabled":""}>${soldOut?"Sold out":"Add to cart"}</button><button class="mini-btn" data-buy="${p.id}" ${soldOut?"disabled":""}>WhatsApp</button></div></div>
  </article>`;
 }
 function renderProducts(list=products){document.querySelector("#productGrid").innerHTML=list.map(productCard).join("")||'<p class="empty">No creations found.</p>';bindProductButtons();}
@@ -32,7 +40,15 @@ function bindProductButtons(){
  document.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>orderWhatsApp([+b.dataset.buy]));
  document.querySelectorAll("[data-wish]").forEach(b=>b.onclick=()=>toggleWish(+b.dataset.wish));
 }
-function addToCart(id){const p=products.find(x=>x.id===id);const item=cart.find(x=>x.id===id);item?item.qty++:cart.push({id,qty:1});save();openDrawer("cartDrawer");renderCart();}
+function addToCart(id){
+ const p=products.find(x=>x.id===id);
+ if(!p || Number(p.stock||0)<=0)return;
+ const item=cart.find(x=>x.id===id);
+ if(item){
+   if(item.qty < Number(p.stock)) item.qty++;
+ } else cart.push({id,qty:1});
+ save();openDrawer("cartDrawer");renderCart();
+}
 function toggleWish(id){wishlist.includes(id)?wishlist=wishlist.filter(x=>x!==id):wishlist.push(id);save();renderProducts(currentProducts);renderWishlist();}
 let currentProducts=products;
 function renderCart(){
