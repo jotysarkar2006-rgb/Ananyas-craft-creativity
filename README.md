@@ -1,34 +1,24 @@
-# Ananya's Craft & Creativity — Starter Website
+# Ananya's Craft & Creativity — Complete Storefront
 
-This is the first premium handmade storefront prototype.
+This is the complete front-end storefront prototype.
 
-Included now:
+Included:
 - Premium responsive home page
-- Shop/category sections
-- Search
-- Wishlist (local browser storage)
-- Cart (local browser storage)
-- WhatsApp ordering to +91 78906 05022
-- Instagram/email links
-- Mobile menu
-- Product data is kept in `app.js` so it can later be replaced by a proper admin/backend system
+- Logo and brand story
+- Search and category filters
+- Wishlist
+- Shopping cart with quantity/stock controls
+- WhatsApp single-product and cart checkout
+- Login UI
+- Product Studio admin page
+- Direct product image selection from Mac/iPhone-compatible browser file picker
+- Image preview
+- Add / edit / delete products
+- Price, stock, category, badge and description
+- Product search in admin
+- Product export/import backup
+- Skincare category
+- Responsive mobile layout
 
 Important:
-- The current product cards are demo products/placeholders.
-- No payment gateway is included.
-- No Supabase connection is included.
-- Before launch, connect a real backend/admin panel and replace demo product data/images.
-
-
-## V2 updates
-- Added the generated brand logo to the header/footer/login screen.
-- Added a Login / My Account UI with Google and email login buttons.
-- Authentication is intentionally not fake: the buttons are placeholders until a secure auth provider/backend is connected.
-
-
-## V3 Product Studio
-- Added `admin.html` product dashboard.
-- Add/edit/delete products, price, stock, category, description and image URL.
-- Added Skincare category.
-- Shop reads the editable catalog and respects stock.
-- Product changes currently use browser localStorage only. For real multi-device store management, connect a secure database and admin authentication in the next step.
+The current catalog is stored in browser localStorage. This means product changes are not shared across customers/devices. The next production step is to connect a secure cloud database and admin authentication. Do not put payment secrets in this front-end.
